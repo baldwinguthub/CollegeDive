@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>College Dive | Championship Leaderboard</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --navy: #061426;
+  --panel: #0c2038;
+  --cyan: #5de3f9;
+  --pink: #ff528d;
+  --gold: #ffd36c;
+  --silver: #cad8e5;
+  --bronze: #e7a77d;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 50% 5%, #174c70 0%, transparent 55%),
+    linear-gradient(#061426, #020b16);
+  font-family: Arial, Helvetica, sans-serif;
+  color: white;
+}
+
+.container {
+  max-width: 1150px;
+  margin: auto;
+  padding: 30px;
+}
+
+h1 {
+  font-size: clamp(40px, 6vw, 76px);
+  margin: 10px 0;
+  color: var(--cyan);
+  letter-spacing: 3px;
+}
+
+h2 {
+  color: var(--cyan);
+}
+
+.subtitle {
+  color: var(--pink);
+  font-weight: bold;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.panel {
+  padding: 28px;
+  margin: 22px 0;
+  background: var(--panel);
+  border: 1px solid #315a78;
+  border-radius: 16px;
+}
+
+button {
+  padding: 14px 20px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--cyan);
+  color: var(--navy);
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 5px;
+}
+
+button:hover {
+  filter: brightness(1.12);
+}
+
+button:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+button.secondary {
+  background: #234764;
+  color: white;
+}
+
+button.pink {
+  background: var(--pink);
+  color: white;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  font-size: 17px;
+  color: white;
+  background: #071627;
+  border: 1px solid #42718b;
+  border-radius: 7px;
+}
+
+label {
+  color: #bad0e1;
+  font-size: 13px;
+}
+
+.entry {
+  display: grid;
+  grid-template-columns: 45px 1fr 160px;
+  align-items: end;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.number {
+  color: var(--cyan);
+  font-size: 24px;
+  font-weight: bold;
+  padding-bottom: 10px;
+}
+
+.instructions {
+  color: #b2c8d9;
+  line-height: 1.7;
+}
+
+#status {
+  color: var(--gold);
+  min-height: 28px;
+  font-weight: bold;
+}
+
+#projector {
+  text-align: center;
+  min-height: 100vh;
+}
+
+#standby {
+  padding-top: 13vh;
+}
+
+#standby h1 {
+  font-size: clamp(65px, 10vw, 140px);
+  text-shadow: 4px 4px var(--pink);
+}
+
+.bigMessage {
+  font-size: clamp(24px, 3vw, 45px);
+  color: white;
+  margin-top: 40px;
+}
+
+#countdown {
+  font-size: clamp(100px, 22vw, 250px);
+  font-weight: 900;
+  color: var(--gold);
+  text-shadow: 0 0 45px #ffd36c55;
+}
+
+#rankings {
+  max-width: 1050px;
+  margin: 28px auto;
+}
+
+.ranking {
+  display: grid;
+  grid-template-columns: 75px 1fr 125px;
+  align-items: center;
+  gap: 18px;
+  text-align: left;
+  padding: 15px 22px;
+  margin: 11px 0;
+  background: #102a45;
+  border: 1px solid #335875;
+  border-radius: 12px;
+  animation: enter .7s ease both;
+}
+
+.rankNumber {
+  font-size: 30px;
+  color: #a1bfd1;
+  font-weight: 900;
+}
+
+.teamName {
+  font-size: clamp(18px, 2.5vw, 30px);
+  font-weight: bold;
+  overflow-wrap: anywhere;
+}
+
+.scoreNumber {
+  font-size: clamp(24px, 3vw, 37px);
+  color: var(--cyan);
+  text-align: right;
+  font-weight: 900;
+}
+
+.barTrack {
+  height: 8px;
+  margin-top: 12px;
+  background: #233d54;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  width: 0;
+  background: var(--cyan);
+  border-radius: 8px;
+  transition: width 1.2s ease;
+}
+
+.first {
+  border: 2px solid var(--gold);
+  background: #403622;
+  box-shadow: 0 0 25px #ffd36c33;
+}
+
+.first .rankNumber,
+.first .scoreNumber {
+  color: var(--gold);
+}
+
+.second {
+  border-color: var(--silver);
+}
+
+.third {
+  border-color: var(--bronze);
+}
+
+#winner {
+  margin: 30px auto;
+  padding: 26px;
+  max-width: 950px;
+  border: 2px solid var(--gold);
+  border-radius: 18px;
+  background: #342b1a;
+  animation: enter 1s ease both;
+}
+
+#winner h2 {
+  color: var(--gold);
+  font-size: clamp(35px, 5vw, 65px);
+  margin: 10px;
+}
+
+#winnerName {
+  font-size: clamp(30px, 5vw, 65px);
+  font-weight: 900;
+}
+
+#winnerScore {
+  color: var(--gold);
+  font-size: 36px;
+  margin: 15px;
+}
+
+.confetti {
+  position: fixed;
+  top: -30px;
+  pointer-events: none;
+  z-index: 20;
+  animation: fall linear forwards;
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(110vh) rotate(700deg);
+    opacity: 0;
+  }
+}
+
+.hidden {
+  display: none !important;
+}
+
+.footer {
+  color: #7897aa;
+  text-align: center;
+  margin-top: 30px;
+}
+
+@media(max-width:650px) {
+  .container {
+    padding: 15px;
+  }
+
+  .entry {
+    grid-template-columns: 30px 1fr 100px;
+    gap: 5px;
+  }
+
+  .ranking {
+    grid-template-columns: 45px 1fr 85px;
+    padding: 12px;
+    gap: 7px;
+  }
+
+  .rankNumber {
+    font-size: 22px;
+  }
+
+  button {
+    width: 100%;
+    margin: 5px 0;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- HOST CONTROL PANEL -->
+
+<div id="host" class="container">
+
+  <div class="subtitle">
+    Town Hall Championship
+  </div>
+
+  <h1>🌊 COLLEGE DIVE</h1>
+
+  <h2>🏆 Championship Control Panel</h2>
+
+  <div class="panel">
+
+    <p class="instructions">
+      Enter all seven team names and their final College Dive
+      scores. Scores must be between 0 and 700.
+      The audience will not see the scores until
+      you begin the championship reveal.
+    </p>
+
+    <div id="teamInputs"></div>
+
+    <p id="status"></p>
+
+    <button onclick="saveScores()">
+      💾 SAVE ALL SCORES
+    </button>
+
+    <button class="secondary" onclick="openProjector()">
+      📺 OPEN PROJECTOR SCREEN
+    </button>
+
+  </div>
+
+  <div class="panel">
+
+    <h2>🎬 Championship Reveal</h2>
+
+    <p class="instructions">
+      Once all seven scores have been entered,
+      saved, and checked, click the button below.
+      The projected screen will automatically begin
+      a dramatic countdown and reveal the teams
+      from seventh place to first.
+    </p>
+
+    <button class="pink" onclick="startReveal()">
+      🏆 REVEAL THE CHAMPIONS
+    </button>
+
+    <button class="secondary" onclick="replayReveal()">
+      🔄 REPLAY REVEAL
+    </button>
+
+    <button class="secondary" onclick="resetDisplay()">
+      RESET PROJECTOR TO WELCOME SCREEN
+    </button>
+
+  </div>
+
+  <div class="panel">
+    <h2>How to Use This at Town Hall</h2>
+
+    <p class="instructions">
+      1. Open the projector screen in a separate Chrome window.<br>
+      2. Move that window to your projector.<br>
+      3. Enter each team's final score on your MacBook.<br>
+      4. Save the scores.<br>
+      5. Click Reveal the Champions.<br>
+      6. Watch the rankings appear automatically!
+    </p>
+  </div>
+
+  <div class="footer">
+    College Dive | Town Hall Edition
+  </div>
+
+</div>
+
+
+<!-- AUDIENCE PROJECTOR -->
+
+<div id="projector" class="container hidden">
+
+  <div class="subtitle">
+    The College Knowledge Challenge
+  </div>
+
+  <div id="standby">
+    <h1>COLLEGE DIVE</h1>
+
+    <div style="font-size:80px">🌊</div>
+
+    <p class="bigMessage">
+      7 Teams. 7 Questions. One Champion.
+    </p>
+
+    <p class="bigMessage" style="color:var(--cyan)">
+      THE CHAMPIONSHIP REVEAL IS COMING!
+    </p>
+  </div>
+
+  <div id="countdownArea" class="hidden">
+    <h1>WHO WILL WIN?</h1>
+    <div id="countdown">3</div>
+  </div>
+
+  <div id="resultsArea" class="hidden">
+
+    <h1>🏆 FINAL LEADERBOARD</h1>
+
+    <p class="subtitle">
+      College Dive: Town Hall Edition
+    </p>
+
+    <div id="rankings"></div>
+
+    <div id="winner" class="hidden">
+
+      <div class="subtitle">
+        College Dive Champions
+      </div>
+
+      <h2>🏆 WE HAVE A WINNER! 🏆</h2>
+
+      <div id="winnerName"></div>
+
+      <div id="winnerScore"></div>
+
+      <p>
+        Congratulations to all seven teams!
+      </p>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* COLLEGE DIVE CHAMPIONSHIP LEADERBOARD */
+
+const STORAGE_KEY = "collegeDiveChampionshipV1";
+
+const isProjector =
+  new URLSearchParams(location.search).get("screen") === "1";
+
+const $ = id => document.getElementById(id);
+
+let presentationVersion = "";
+let displayedRows = 0;
+let confettiLaunched = false;
+
+const REVEAL_DELAY = 3000;
+const ROW_DELAY = 1400;
+
+
+/* INITIAL DATA */
+
+function defaultData() {
+  return {
+    teams: Array.from({length:7}, () => ({
+      name:"",
+      score:0
+    })),
+    phase:"standby",
+    started:0
+  };
+}
+
+function readData() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY))
+      || defaultData();
+  } catch {
+    return defaultData();
+  }
+}
+
+function writeData(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+
+/* HOST TEAM INPUTS */
+
+function buildInputs() {
+  const data = readData();
+
+  $("teamInputs").innerHTML = "";
+
+  for(let i=0;i<7;i++) {
+    const row = document.createElement("div");
+    row.className = "entry";
+
+    const n = document.createElement("div");
+    n.className = "number";
+    n.textContent = i+1;
+
+    const nameGroup = document.createElement("div");
+    const nameLabel = document.createElement("label");
+    nameLabel.textContent = "TEAM NAME";
+    const nameInput = document.createElement("input");
+    nameInput.id = "name"+i;
+    nameInput.maxLength = 35;
+    nameInput.placeholder = "Team "+(i+1);
+    nameInput.value = data.teams[i]?.name || "";
+    nameGroup.append(nameLabel,nameInput);
+
+    const scoreGroup = document.createElement("div");
+    const scoreLabel = document.createElement("label");
+    scoreLabel.textContent = "SCORE / 700";
+    const scoreInput = document.createElement("input");
+    scoreInput.id = "score"+i;
+    scoreInput.type = "number";
+    scoreInput.min = "0";
+    scoreInput.max = "700";
+    scoreInput.step = "1";
+    scoreInput.value = data.teams[i]?.score ?? 0;
+    scoreGroup.append(scoreLabel,scoreInput);
+
+    row.append(n,nameGroup,scoreGroup);
+    $("teamInputs").appendChild(row);
+  }
+}
+
+
+/* SAVE ALL SCORES */
+
+function saveScores() {
+  const teams = [];
+
+  for(let i=0;i<7;i++) {
+    const name = $("name"+i).value.trim();
+    const raw = $("score"+i).value.trim();
+    const score = Number(raw);
+
+    if(!name) {
+      alert("Please enter a name for Team "+(i+1));
+      return false;
+    }
+
+    if(
+      raw === "" ||
+      !Number.isInteger(score) ||
+      score < 0 ||
+      score > 700
+    ) {
+      alert("Enter a valid score between 0 and 700 for "+name);
+      return false;
+    }
+
+    teams.push({name,score});
+  }
+
+  const names = teams.map(t => t.name.toLowerCase());
+
+  if(new Set(names).size !== 7) {
+    alert("Please give each team a different name.");
+    return false;
+  }
+
+  const data = {
+    teams,
+    phase:"standby",
+    started:0
+  };
+
+  writeData(data);
+
+  $("status").textContent =
+    "✓ All seven scores saved successfully!";
+
+  return true;
+}
+
+
+/* OPEN AUDIENCE WINDOW */
+
+function openProjector() {
+  const url = new URL(location.href);
+  url.searchParams.set("screen","1");
+
+  const win = window.open(url.href,"collegeDiveProjector");
+
+  if(!win) {
+    alert(
+      "Your browser blocked the new window. Allow pop-ups for this site."
+    );
+  }
+}
+
+
+/* SORT FINAL SCORES */
+
+function sortedTeams(data) {
+  return data.teams
+    .map((team,index) => ({...team,index}))
+    .sort((a,b) =>
+      b.score-a.score || a.index-b.index
+    );
+}
+
+
+/* BEGIN THE REVEAL */
+
+function startReveal() {
+  const data = readData();
+
+  if(data.teams.some(t => !t.name)) {
+    alert("Please enter and save all seven teams first.");
+    return;
+  }
+
+  const changed = data.teams.some((t,i) =>
+    t.name !== $("name"+i).value.trim() ||
+    t.score !== Number($("score"+i).value)
+  );
+
+  if(changed) {
+    alert("You have unsaved changes. Save scores first.");
+    return;
+  }
+
+  data.phase = "reveal";
+  data.started = Date.now();
+
+  writeData(data);
+
+  $("status").textContent =
+    "🏆 Championship reveal started on the projector!";
+}
+
+
+/* REPLAY */
+
+function replayReveal() {
+  startReveal();
+}
+
+
+/* RESET PRESENTATION */
+
+function resetDisplay() {
+  const data = readData();
+
+  data.phase = "standby";
+  data.started = 0;
+
+  writeData(data);
+
+  $("status").textContent =
+    "Projector returned to the welcome screen. Scores preserved.";
+}
+
+
+/* PROJECTOR HELPERS */
+
+function setVisible(id,visible) {
+  $(id).classList.toggle("hidden",!visible);
+}
+
+function clearPresentation() {
+  $("rankings").replaceChildren();
+  setVisible("winner",false);
+  document.querySelectorAll(".confetti").forEach(e=>e.remove());
+  displayedRows = 0;
+  confettiLaunched = false;
+}
+
+
+/* CREATE A LEADERBOARD ROW */
+
+function addRanking(team,rank) {
+  const row = document.createElement("div");
+  row.className = "ranking";
+
+  if(rank === 1) row.classList.add("first");
+  if(rank === 2) row.classList.add("second");
+  if(rank === 3) row.classList.add("third");
+
+  const number = document.createElement("div");
+  number.className = "rankNumber";
+  number.textContent =
+    rank === 1 ? "🥇 1" :
+    rank === 2 ? "🥈 2" :
+    rank === 3 ? "🥉 3" : "#"+rank;
+
+  const middle = document.createElement("div");
+
+  const name = document.createElement("div");
+  name.className = "teamName";
+  name.textContent = team.name;
+
+  const track = document.createElement("div");
+  track.className = "barTrack";
+
+  const bar = document.createElement("div");
+  bar.className = "bar";
+
+  track.appendChild(bar);
+  middle.append(name,track);
+
+  const points = document.createElement("div");
+  points.className = "scoreNumber";
+  points.textContent = team.score;
+
+  row.append(number,middle,points);
+
+  /*
+  New rows appear at the top.
+  The audience sees the rankings build
+  from seventh place to first place.
+  */
+
+  $("rankings").prepend(row);
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      bar.style.width = (team.score/700*100)+"%";
+    });
+  });
+}
+
+
+/* CHAMPIONSHIP CELEBRATION */
+
+function launchConfetti() {
+  if(confettiLaunched) return;
+  confettiLaunched = true;
+
+  const colors = [
+    "#5de3f9",
+    "#ff528d",
+    "#ffd36c",
+    "#ffffff",
+    "#83f5cf"
+  ];
+
+  for(let i=0;i<90;i++) {
+    const piece = document.createElement("div");
+    piece.className = "confetti";
+
+    piece.style.left = (Math.random()*100)+"vw";
+    piece.style.width = "10px";
+    piece.style.height = "16px";
+    piece.style.background =
+      colors[Math.floor(Math.random()*colors.length)];
+
+    piece.style.animationDuration =
+      (3+Math.random()*3)+"s";
+
+    piece.style.animationDelay =
+      (Math.random()*2)+"s";
+
+    document.body.appendChild(piece);
+
+    setTimeout(() => piece.remove(),8500);
+  }
+}
+
+
+/* UPDATE THE PROJECTED DISPLAY */
+
+function updateProjector() {
+  const data = readData();
+
+  const version = data.phase+"|"+data.started+
+    "|"+JSON.stringify(data.teams);
+
+  if(version !== presentationVersion) {
+    presentationVersion = version;
+    clearPresentation();
+  }
+
+  if(data.phase !== "reveal") {
+    setVisible("standby",true);
+    setVisible("countdownArea",false);
+    setVisible("resultsArea",false);
+    return;
+  }
+
+  const elapsed = Math.max(0,Date.now()-data.started);
+
+  setVisible("standby",false);
+
+  if(elapsed < REVEAL_DELAY) {
+    setVisible("countdownArea",true);
+    setVisible("resultsArea",false);
+
+    $("countdown").textContent =
+      Math.max(1,3-Math.floor(elapsed/1000));
+
+    return;
+  }
+
+  setVisible("countdownArea",false);
+  setVisible("resultsArea",true);
+
+  const ranked = sortedTeams(data);
+
+  /*
+  Reveal from 7th to 1st.
+  */
+
+  const revealOrder = [...ranked].reverse();
+
+  const count = Math.min(
+    7,
+    Math.floor((elapsed-REVEAL_DELAY)/ROW_DELAY)+1
+  );
+
+  while(displayedRows<count) {
+    const team = revealOrder[displayedRows];
+    const rank = 7-displayedRows;
+
+    addRanking(team,rank);
+    displayedRows++;
+  }
+
+  /*
+  Display the winning team after
+  all seven rankings have appeared.
+  */
+
+  if(elapsed >= REVEAL_DELAY+7*ROW_DELAY) {
+    const winner = ranked[0];
+
+    $("winnerName").textContent = winner.name;
+    $("winnerScore").textContent =
+      winner.score+" / 700 POINTS";
+
+    setVisible("winner",true);
+
+    launchConfetti();
+  }
+}
+
+
+/* INITIALIZE */
+
+if(isProjector) {
+  setVisible("host",false);
+  setVisible("projector",true);
+
+  document.title = "College Dive | Audience Screen";
+
+  updateProjector();
+
+  /*
+  Both windows must use the same
+  browser profile and website origin.
+  Local storage synchronizes the reveal.
+  */
+
+  setInterval(updateProjector,150);
+
+  window.addEventListener("storage",updateProjector);
+
+} else {
+  setVisible("host",true);
+  setVisible("projector",false);
+
+  buildInputs();
+}
+
+</script>
+
+</body>
+</html>
